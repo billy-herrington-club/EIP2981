@@ -1,20 +1,11 @@
-pragma solidity 0.8.15; 
+//SPDX-License-Identifier: Unlicense
+pragma solidity 0.8.15;
 
 ///
 /// @dev Interface for the NFT Royalty Standard
 ///
 
-interface IERC165 {
-    /// @notice Query if a contract implements an interface
-    /// @param interfaceID The interface identifier, as specified in ERC-165
-    /// @dev Interface identification is specified in ERC-165. This function
-    ///  uses less than 30,000 gas.
-    /// @return `true` if the contract implements `interfaceID` and
-    ///  `interfaceID` is not 0xffffffff, `false` otherwise
-    function supportsInterface(bytes4 interfaceID) external view returns (bool);
-}
-
-interface IERC2981 is IERC165 {
+interface IERC2981 {
     /// ERC165 bytes to add to interface array - set in parent contract
     /// implementing this standard
     ///
@@ -28,14 +19,8 @@ interface IERC2981 is IERC165 {
     /// @param _salePrice - the sale price of the NFT asset specified by _tokenId
     /// @return receiver - address of who should be sent the royalty payment
     /// @return royaltyAmount - the royalty payment amount for _salePrice
-    function royaltyInfo(
-        uint256 _tokenId,
-        uint256 _salePrice
-    ) external view returns (
-        address receiver,
-        uint256 royaltyAmount
-    );
+    function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
+        external
+        view
+        returns (address receiver, uint256 royaltyAmount);
 }
-
-
-
