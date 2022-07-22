@@ -12,39 +12,31 @@ contract BHNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ERC2981 {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
-
+    
     uint8 constant MAX_SUPPLY = 228;
 
     constructor() ERC721("Billy Herrington NFT", "BHNFT") {}
 
-    function safeMint(address to, string memory uri) public onlyOwner {
-        require(
-            _tokenIdCounter.current() < MAX_SUPPLY,
-            "Boysia 228 esli pudrish nosik"
-        );
+    ///@notice Mints an NFT with a royalty
+    ///@param to - adress to which the token is minted
+    ///@param uri - uri to metadata
+    ///@param royaltyReciever - address that will receiver royalty
+    ///@param royaltyPercent - percentage that will be deducted from a trade
+    function safeMint(
+        address to,
+        string memory uri,
+        address royaltyReciever,
+        uint256 royaltyPercent
+    ) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
+        require(tokenId + 1 < MAX_SUPPLY, "Boysia 228 esli pudrish nosik");
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
-    }
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        address royaltyAddress,
-        uint256 royaltyPercent
-    ) external virtual {
-        require(
-            _isApprovedOrOwner(_msgSender(), tokenId),
-            "ERC721: caller is not token owner nor approved"
-        );
-        addRoyalty(tokenId, royaltyAddress, royaltyPercent);
-        _transfer(from, to, tokenId);
+        _addRoyalty(tokenId, royaltyReciever, royaltyPercent);
     }
 
     // The following functions are overrides required by Solidity.
-
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -75,6 +67,7 @@ contract BHNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ERC2981 {
         override(ERC721, ERC721Enumerable)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC2981).interfaceId ||
+         super.supportsInterface(interfaceId);
     }
 }
